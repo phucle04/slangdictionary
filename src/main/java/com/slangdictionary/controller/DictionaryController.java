@@ -12,6 +12,8 @@ import com.slangdictionary.service.FileService;
 import java.util.List;
 import javafx.scene.control.TextInputDialog;
 import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class DictionaryController {
 
@@ -205,9 +207,33 @@ public class DictionaryController {
 
     @FXML
     private void onDelete() {
-        txtResult.setText("DELETE clicked!\n\nFeature coming soon...");
-    }
+        String selected = listViewSlang.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            txtResult.setText("❌ Please select a slang word from the list to delete!");
+            return;
+        }
 
+        // Lấy slang word và definition hiện tại
+        String[] parts = selected.split(" → ", 2);
+        String slangToDelete = parts[0];
+        String currentDefinition = dictionary.exactSearch(slangToDelete);
+
+        // Hiển thị xác nhận
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirm Delete");
+        confirmation.setHeaderText("Are you sure you want to delete this slang word?");
+        confirmation.setContentText("Slang: " + slangToDelete + "\nDefinition: " + currentDefinition);
+
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            dictionary.removeWord(slangToDelete);
+            displayAllSlangWords(); // Refresh list
+            txtResult.setText("🗑️ Deleted successfully!\n\n" +
+                    "Removed: " + slangToDelete + "\n" +
+                    "Definition: " + currentDefinition + "\n\n" +
+                    "Total words: " + dictionary.getSize());
+        }
+    }
     @FXML
     private void onEdit() {
         String selected = listViewSlang.getSelectionModel().getSelectedItem();
