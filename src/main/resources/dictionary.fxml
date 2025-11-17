@@ -17,6 +17,7 @@
             <TextField fx:id="txtInput" prefWidth="250.0" promptText="Enter slang word or definition..."/>
             <Button text="Confirm" onAction="#onConfirm"/>
             <Button text="Search by key" onAction="#onSearch"/>
+            <Button text="Search by definition" onAction="#onSearchByDefinition" styleClass="search"/>
         </HBox>
     </top>
 

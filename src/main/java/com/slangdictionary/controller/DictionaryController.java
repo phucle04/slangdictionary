@@ -129,6 +129,28 @@ public class DictionaryController {
         }
     }
 
+    @FXML
+    private void onSearchByDefinition() {
+        String input = txtInput.getText().trim();
+        if (input.isEmpty()) {
+            txtResult.setText("❌ Please enter a keyword to search in definitions!");
+            return;
+        }
+
+        // Search theo definition
+        long startTime = System.nanoTime();
+        List<SlangWord> results = dictionary.searchByDefinition(input);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+
+        updateListView(results);
+
+        txtResult.setText("Search Results in Definitions for: \"" + input + "\"\n\n" +
+                "Found: " + results.size() + " slang words\n" +
+                "Search time: " + duration + " ms\n\n" +
+                "Click on any word to view details.");
+    }
+
     private void updateListView(List<SlangWord> words) {
         slangList.clear();
         for (SlangWord word : words) {

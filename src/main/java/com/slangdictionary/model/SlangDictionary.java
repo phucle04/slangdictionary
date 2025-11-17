@@ -57,6 +57,18 @@ public class SlangDictionary {
         return new ArrayList<>(results);
     }
 
+    // Trong SlangDictionary.java
+    public List<SlangWord> searchByDefinition(String keyword) {
+        String lowercaseKeyword = keyword.toLowerCase();
+        Set<SlangWord> results = new HashSet<>();
+
+        // Search trong definitions
+        slangMap.entrySet().stream()
+                .filter(entry -> entry.getValue().toLowerCase().contains(lowercaseKeyword))
+                .forEach(entry -> results.add(new SlangWord(entry.getKey(), entry.getValue())));
+
+        return new ArrayList<>(results);
+    }
     // Lấy tất cả slang words
     public List<SlangWord> getAllSlangWords() {
         return slangMap.entrySet().stream()
