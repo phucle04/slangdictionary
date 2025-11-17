@@ -87,13 +87,30 @@ public class SlangDictionary {
                     }
                 }
             }
-            // Remove from main map
+            // Remove từ main map
             slangMap.remove(lowercaseWord);
         }
     }
 
-    public void updateWord(String word, String newDefinition) {
-        removeWord(word);
-        addSlang(word, newDefinition);
+    public boolean editSlangWord(String oldWord, String newWord, String newDefinition) {
+        if (oldWord == null || oldWord.trim().isEmpty() ||
+                newWord == null || newWord.trim().isEmpty() ||
+                newDefinition == null || newDefinition.trim().isEmpty()) {
+            return false;
+        }
+
+        String lowercaseOldWord = oldWord.trim().toLowerCase();
+        String lowercaseNewWord = newWord.trim().toLowerCase();
+
+        // Kiểm tra slang word cũ có tồn tại không
+        if (!slangMap.containsKey(lowercaseOldWord)) {
+            return false;
+        }
+
+        // Xóa word cũ và thêm word mới
+        removeWord(oldWord);
+        addSlang(newWord, newDefinition);
+        return true;
     }
+
 }

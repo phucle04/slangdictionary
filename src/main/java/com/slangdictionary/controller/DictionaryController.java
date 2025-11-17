@@ -210,7 +210,50 @@ public class DictionaryController {
 
     @FXML
     private void onEdit() {
-        txtResult.setText("EDIT clicked!\n\nFeature coming soon...");
+        String selected = listViewSlang.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            txtResult.setText("❌ Please select a slang word from the list to edit!");
+            return;
+        }
+
+        // Lấy slang word và definition hiện tại
+        String[] parts = selected.split(" → ", 2);
+        String currentSlang = parts[0];
+        String currentDefinition = dictionary.exactSearch(currentSlang);
+
+        // Dialog nhập slang word mới
+        TextInputDialog slangDialog = new TextInputDialog(currentSlang);
+        slangDialog.setTitle("Edit Slang Word");
+        slangDialog.setHeaderText("Edit slang word");
+        slangDialog.setContentText("Slang:");
+
+        Optional<String> slangResult = slangDialog.showAndWait();
+        if (slangResult.isPresent() && !slangResult.get().trim().isEmpty()) {
+            String newSlang = slangResult.get().trim();
+
+            // Dialog nhập definition mới
+            TextInputDialog definitionDialog = new TextInputDialog(currentDefinition);
+            definitionDialog.setTitle("Edit Definition");
+            definitionDialog.setHeaderText("Edit definition for: " + newSlang);
+            definitionDialog.setContentText("Definition:");
+
+            Optional<String> definitionResult = definitionDialog.showAndWait();
+            if (definitionResult.isPresent() && !definitionResult.get().trim().isEmpty()) {
+                String newDefinition = definitionResult.get().trim();
+                boolean success = dictionary.editSlangWord(currentSlang, newSlang, newDefinition);
+
+                if (success) {
+                    displayAllSlangWords(); // Refresh list
+                    txtResult.setText("✅ Edited successfully!\n\n" +
+                            "From: " + currentSlang + " → " + currentDefinition + "\n" +
+                            "To: " + newSlang + " → " + newDefinition + "\n\n" +
+                            "Total words: " + dictionary.getSize());
+                } else {
+                    txtResult.setText("❌ Failed to edit slang word!\n\n" +
+                            "Please check that both word and definition are not empty.");
+                }
+            }
+        }
     }
 
     @FXML
