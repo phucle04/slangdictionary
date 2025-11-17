@@ -7,45 +7,40 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.slangdictionary.controller.DictionaryController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="500.0" prefWidth="800.0">
 
     <!-- TOP SEARCH BAR -->
     <top>
-        <HBox spacing="10.0">
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
             <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
             <Label text="Type here:" />
-            <TextField fx:id="txtInput" prefWidth="200.0"/>
+            <TextField fx:id="txtInput" prefWidth="250.0" promptText="Enter slang word or definition..."/>
             <Button text="Confirm" onAction="#onConfirm"/>
             <Button text="Search by key" onAction="#onSearch"/>
         </HBox>
     </top>
 
-    <!-- CENTER RESULT -->
+    <!-- CENTER - LIST VIEW HIỂN THỊ SLANG WORDS -->
     <center>
-        <TextArea fx:id="txtResult" editable="false" wrapText="true" />
+        <ListView fx:id="listViewSlang"
+                  onMouseClicked="#onSlangSelected"
+                  style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 12px;"/>
     </center>
 
-    <!-- RIGHT PANEL -->
-    <right>
-        <VBox spacing="10.0">
-            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
-            <Button text="History" onAction="#onHistory"/>
-            <Button text="Quiz 1" onAction="#onQuiz1"/>
-            <Button text="Quiz 2" onAction="#onQuiz2"/>
-            <Button text="Reset" onAction="#onReset"/>
-        </VBox>
-    </right>
-
-    <!-- BOTTOM PANEL -->
+    <!-- BOTTOM - TEXT AREA HIỂN THỊ CHI TIẾT -->
     <bottom>
-        <HBox spacing="10.0">
-            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
-            <Button text="ADD" onAction="#onAdd"/>
-            <Button text="DELETE" onAction="#onDelete"/>
-            <Button text="EDIT" onAction="#onEdit"/>
-            <Button text="RANDOM" onAction="#onRandom"/>
-            <Button text="SAVE" onAction="#onSave"/>
-        </HBox>
+        <VBox>
+            <TextArea fx:id="txtResult" editable="false" wrapText="true"
+                      prefHeight="150" prefWidth="800"/>
+            <HBox spacing="10.0" alignment="CENTER">
+                <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
+                <Button text="ADD" onAction="#onAdd"/>
+                <Button text="DELETE" onAction="#onDelete"/>
+                <Button text="EDIT" onAction="#onEdit"/>
+                <Button text="RANDOM" onAction="#onRandom"/>
+                <Button text="SAVE" onAction="#onSave"/>
+            </HBox>
+        </VBox>
     </bottom>
 
 </BorderPane>

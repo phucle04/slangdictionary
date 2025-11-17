@@ -19,7 +19,7 @@ public class Main extends Application {
             Scene scene = new Scene(root, 650, 350);
 
             // Set up stage
-            primaryStage.setTitle("📚 Slang Dictionary");
+            primaryStage.setTitle("Slang Dictionary");
             primaryStage.setScene(scene);
             primaryStage.setMinWidth(650);
             primaryStage.setMinHeight(350);
