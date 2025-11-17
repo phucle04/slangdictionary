@@ -24,6 +24,16 @@ public class SlangDictionary {
         }
     }
 
+    // Trong SlangDictionary.java
+    public boolean addSlangWord(String word, String definition) {
+        if (word == null || word.trim().isEmpty() || definition == null || definition.trim().isEmpty()) {
+            return false;
+        }
+        String lowercaseWord = word.trim().toLowerCase();
+        addSlang(lowercaseWord, definition.trim());
+        return true;
+    }
+
     // Search chính xác - O(1)
     public String exactSearch(String word) {
         return slangMap.get(word.toLowerCase());

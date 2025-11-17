@@ -10,6 +10,8 @@ import com.slangdictionary.model.SlangWord;
 import com.slangdictionary.model.SlangDictionary;
 import com.slangdictionary.service.FileService;
 import java.util.List;
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
 
 public class DictionaryController {
 
@@ -48,9 +50,8 @@ public class DictionaryController {
                     "Use search box to find specific words...");
         } catch (Exception e) {
             System.err.println("Error loading file: " + e.getMessage());
-            txtResult.setText("📝 Loaded sample data (" + dictionary.getSize() + " words)\n\n" +
-                    "File 'data/slang.txt' not found. Using sample data.\n" +
-                    "Try: sus, ghost, salty, flex, lit, woke, yeet");
+            txtResult.setText(" Loaded sample data (" + dictionary.getSize() + " words)\n\n" +
+                    "File 'data/slang.txt' not found. Using sample data.\n");
         }
     }
 
@@ -86,7 +87,7 @@ public class DictionaryController {
             return;
         }
 
-        // Search với hiệu năng cao
+        // Search
         long startTime = System.nanoTime();
         List<SlangWord> results = dictionary.searchByKeyword(input);
         long endTime = System.nanoTime();
@@ -94,7 +95,7 @@ public class DictionaryController {
 
         updateListView(results);
 
-        txtResult.setText("🔍 Search Results for: \"" + input + "\"\n\n" +
+        txtResult.setText(" Search Results for: \"" + input + "\"\n\n" +
                 "Found: " + results.size() + " results\n" +
                 "Search time: " + duration + " ms\n\n" +
                 "Click on any word to view details.");
@@ -105,14 +106,14 @@ public class DictionaryController {
         String input = txtInput.getText().trim();
         if (input.isEmpty()) return;
 
-        // Exact search - O(1) performance
+        // Search với O(1)
         long startTime = System.nanoTime();
         String definition = dictionary.exactSearch(input);
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / 1000000;
 
         if (definition != null) {
-            txtResult.setText("✅ Exact Match Found:\n\n" +
+            txtResult.setText(" Exact Match Found:\n\n" +
                     "Word: " + input + "\n" +
                     "Definition: " + definition + "\n\n" +
                     "Search time: " + duration + " ms");
@@ -120,7 +121,7 @@ public class DictionaryController {
             // Highlight trong list view
             highlightInListView(input);
         } else {
-            txtResult.setText("❌ No exact match found for: " + input + "\n" +
+            txtResult.setText(" No exact match found for: " + input + "\n" +
                     "Search time: " + duration + " ms\n\n" +
                     "Try using 'Confirm' for broader search.");
         }
@@ -167,7 +168,39 @@ public class DictionaryController {
 
     @FXML
     private void onAdd() {
-        txtResult.setText("ADD clicked!\n\nFeature coming soon...");
+        // Hiển thị dialog nhập slang word
+        TextInputDialog slangDialog = new TextInputDialog();
+        slangDialog.setTitle("Add New Slang Word");
+        slangDialog.setHeaderText("Enter new slang word");
+        slangDialog.setContentText("Slang:");
+
+        Optional<String> slangResult = slangDialog.showAndWait();
+        if (slangResult.isPresent() && !slangResult.get().trim().isEmpty()) {
+            String slangWord = slangResult.get().trim();
+
+            // Hiển thị dialog nhập definition
+            TextInputDialog definitionDialog = new TextInputDialog();
+            definitionDialog.setTitle("Add Definition");
+            definitionDialog.setHeaderText("Enter definition for: " + slangWord);
+            definitionDialog.setContentText("Definition:");
+
+            Optional<String> definitionResult = definitionDialog.showAndWait();
+            if (definitionResult.isPresent() && !definitionResult.get().trim().isEmpty()) {
+                String definition = definitionResult.get().trim();
+                boolean success = dictionary.addSlangWord(slangWord, definition);
+
+                if (success) {
+                    displayAllSlangWords(); // Refresh list
+                    txtResult.setText("✅ Added successfully!\n\n" +
+                            "Slang: " + slangWord + "\n" +
+                            "Definition: " + definition + "\n\n" +
+                            "Total words: " + dictionary.getSize());
+                } else {
+                    txtResult.setText("❌ Failed to add slang word!\n\n" +
+                            "Please check that both word and definition are not empty.");
+                }
+            }
+        }
     }
 
     @FXML
