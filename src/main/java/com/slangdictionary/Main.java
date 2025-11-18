@@ -16,7 +16,7 @@ public class Main extends Application {
             Parent root = loader.load();
 
             // Create scene
-            Scene scene = new Scene(root, 650, 350);
+            Scene scene = new Scene(root, 800, 500);
 
             // Set up stage
             primaryStage.setTitle("Slang Dictionary");

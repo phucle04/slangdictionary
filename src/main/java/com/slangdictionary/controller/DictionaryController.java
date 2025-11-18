@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import com.slangdictionary.model.SlangWord;
 import com.slangdictionary.model.SlangDictionary;
 import com.slangdictionary.service.FileService;
+
+import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.TextInputDialog;
 import java.util.Optional;
@@ -23,8 +25,9 @@ public class DictionaryController {
 
     private ObservableList<String> slangList;
     private SlangDictionary dictionary;
+    private SlangDictionary originalDictionary;
     private FileService fileService;
-
+    private List<String> searchHistory;
     @FXML
     public void initialize() {
         System.out.println("Controller initialized!");
@@ -32,6 +35,7 @@ public class DictionaryController {
         // Khởi tạo
         fileService = new FileService();
         slangList = FXCollections.observableArrayList();
+        searchHistory = new ArrayList<>();
         listViewSlang.setItems(slangList);
 
         // Load dữ liệu
@@ -89,6 +93,11 @@ public class DictionaryController {
             return;
         }
 
+        // Lưu từ tìm kiếm vào lịch sử (không trùng lặp)
+        if (!searchHistory.contains(input)) {
+            searchHistory.add(input);
+        }
+
         // Search
         long startTime = System.nanoTime();
         List<SlangWord> results = dictionary.searchByKeyword(input);
@@ -107,6 +116,11 @@ public class DictionaryController {
     private void onSearch() {
         String input = txtInput.getText().trim();
         if (input.isEmpty()) return;
+
+        // Lưu từ tìm kiếm vào lịch sử (không trùng lặp)
+        if (!searchHistory.contains(input)) {
+            searchHistory.add(input);
+        }
 
         // Search với O(1)
         long startTime = System.nanoTime();
@@ -135,6 +149,11 @@ public class DictionaryController {
         if (input.isEmpty()) {
             txtResult.setText("❌ Please enter a keyword to search in definitions!");
             return;
+        }
+
+        // Lưu từ tìm kiếm vào lịch sử (không trùng lặp)
+        if (!searchHistory.contains(input)) {
+            searchHistory.add(input);
         }
 
         // Search theo definition
@@ -170,7 +189,30 @@ public class DictionaryController {
 
     @FXML
     private void onHistory() {
-        txtResult.setText("History clicked!\n\nFeature coming soon...");
+        if (searchHistory.isEmpty()) {
+            txtResult.setText("📚 Search History\n\nNo search history yet.\n\n" +
+                    "Your searched words will appear here.\n\n" +
+                    "Click any button to go back.");
+            return;
+        }
+
+        StringBuilder historyText = new StringBuilder("📚 Search History\n\n");
+        historyText.append("Recently searched words:\n\n");
+
+        for (int i = searchHistory.size() - 1; i >= 0; i--) {
+            String word = searchHistory.get(i);
+            String definition = dictionary.exactSearch(word);
+            if (definition != null) {
+                historyText.append("• ").append(word).append(" → ").append(definition).append("\n");
+            } else {
+                historyText.append("• ").append(word).append(" (no exact match)\n");
+            }
+        }
+
+        historyText.append("\nTotal searched words: ").append(searchHistory.size());
+        historyText.append("\n\n🔙 Click any button to go back to normal view.");
+
+        txtResult.setText(historyText.toString());
     }
 
     @FXML

@@ -4,44 +4,55 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.slangdictionary.controller.DictionaryController"
-            prefHeight="500.0" prefWidth="800.0">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.slangdictionary.controller.DictionaryController"
+      prefHeight="700.0" prefWidth="800.0"
+      spacing="10.0">
 
     <!-- TOP SEARCH BAR -->
-    <top>
-        <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
-            <Label text="Type here:" />
-            <TextField fx:id="txtInput" prefWidth="250.0" promptText="Enter slang word or definition..."/>
-            <Button text="Confirm" onAction="#onConfirm"/>
-            <Button text="Search by key" onAction="#onSearch"/>
-            <Button text="Search by definition" onAction="#onSearchByDefinition" styleClass="search"/>
-        </HBox>
-    </top>
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
+        <Label text="Type here:" />
+        <TextField fx:id="txtInput" prefWidth="250.0" promptText="Enter slang word or definition..."/>
+        <Button text="Confirm" onAction="#onConfirm"/>
+        <Button text="Search by key" onAction="#onSearch"/>
+        <Button text="Search by definition" onAction="#onSearchByDefinition"/>
+    </HBox>
 
-    <!-- CENTER - LIST VIEW HIỂN THỊ SLANG WORDS -->
-    <center>
-        <ListView fx:id="listViewSlang"
-                  onMouseClicked="#onSlangSelected"
-                  style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 12px;"/>
-    </center>
-
-    <!-- BOTTOM - TEXT AREA HIỂN THỊ CHI TIẾT -->
-    <bottom>
-        <VBox>
-            <TextArea fx:id="txtResult" editable="false" wrapText="true"
-                      prefHeight="150" prefWidth="800"/>
-            <HBox spacing="10.0" alignment="CENTER">
-                <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
-                <Button text="ADD" onAction="#onAdd"/>
-                <Button text="DELETE" onAction="#onDelete"/>
-                <Button text="EDIT" onAction="#onEdit"/>
-                <Button text="RANDOM" onAction="#onRandom"/>
-                <Button text="SAVE" onAction="#onSave"/>
-            </HBox>
+    <!-- MAIN CONTENT AREA -->
+    <HBox spacing="10.0" VBox.vgrow="ALWAYS">
+        <!-- CENTER - LIST VIEW -->
+        <VBox HBox.hgrow="ALWAYS">
+            <ListView fx:id="listViewSlang"
+                      onMouseClicked="#onSlangSelected"
+                      style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 12px;"
+                      VBox.vgrow="ALWAYS"
+                      prefHeight="450"/>
         </VBox>
-    </bottom>
 
-</BorderPane>
+        <!-- RIGHT PANEL -->
+        <VBox spacing="10.0" alignment="CENTER">
+            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
+            <Button text="History" onAction="#onHistory" prefWidth="100"/>
+            <Button text="Quiz 1" onAction="#onQuiz1" prefWidth="100"/>
+            <Button text="Quiz 2" onAction="#onQuiz2" prefWidth="100"/>
+            <Button text="Reset" onAction="#onReset" prefWidth="100"/>
+        </VBox>
+    </HBox>
+
+    <!-- BOTTOM - TEXT AREA & BUTTONS -->
+    <VBox spacing="5.0">
+        <TextArea fx:id="txtResult" editable="false" wrapText="true"
+                  prefHeight="400" prefWidth="800"/>
+        <HBox spacing="10.0" alignment="CENTER">
+            <padding><Insets top="5.0" right="10.0" bottom="10.0" left="10.0"/></padding>
+            <Button text="ADD" onAction="#onAdd"/>
+            <Button text="DELETE" onAction="#onDelete"/>
+            <Button text="EDIT" onAction="#onEdit"/>
+            <Button text="RANDOM" onAction="#onRandom"/>
+            <Button text="SAVE" onAction="#onSave"/>
+        </HBox>
+    </VBox>
+
+</VBox>
