@@ -16,6 +16,7 @@ import javafx.scene.control.TextInputDialog;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
 
 public class DictionaryController {
 
@@ -227,9 +228,19 @@ public class DictionaryController {
 
     @FXML
     private void onReset() {
-        txtInput.clear();
-        displayAllSlangWords();
-        txtResult.setText("Reset complete!\n\nDisplaying all " + dictionary.getSize() + " slang words");
+        // Load lại dictionary gốc từ file
+        try {
+            dictionary = fileService.loadSlangDictionary("data/slang.txt");
+            displayAllSlangWords();
+            txtInput.clear();
+            txtResult.setText("🔄 Reset Complete!\n\n" +
+                    "✅ Restored original slang words from file\n\n" +
+                    "Total words: " + dictionary.getSize());
+        } catch (Exception e) {
+            txtResult.setText("❌ Reset Failed!\n\n" +
+                    "Cannot load original slang words from file.\n" +
+                    "Error: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -244,6 +255,9 @@ public class DictionaryController {
         if (slangResult.isPresent() && !slangResult.get().trim().isEmpty()) {
             String slangWord = slangResult.get().trim();
 
+            // Kiểm tra slang word đã tồn tại chưa
+            boolean wordExists = dictionary.containsWord(slangWord);
+
             // Hiển thị dialog nhập definition
             TextInputDialog definitionDialog = new TextInputDialog();
             definitionDialog.setTitle("Add Definition");
@@ -253,22 +267,57 @@ public class DictionaryController {
             Optional<String> definitionResult = definitionDialog.showAndWait();
             if (definitionResult.isPresent() && !definitionResult.get().trim().isEmpty()) {
                 String definition = definitionResult.get().trim();
-                boolean success = dictionary.addSlangWord(slangWord, definition);
 
-                if (success) {
-                    displayAllSlangWords(); // Refresh list
-                    txtResult.setText("✅ Added successfully!\n\n" +
-                            "Slang: " + slangWord + "\n" +
-                            "Definition: " + definition + "\n\n" +
-                            "Total words: " + dictionary.getSize());
+                if (wordExists) {
+                    // Hiển thị dialog xác nhận khi từ đã tồn tại
+                    Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmation.setTitle("Slang Word Exists");
+                    confirmation.setHeaderText("Slang word \"" + slangWord + "\" already exists!");
+                    confirmation.setContentText("Current definition: " + dictionary.exactSearch(slangWord) +
+                            "\n\nWhat do you want to do?");
+
+                    ButtonType overwriteButton = new ButtonType("Overwrite");
+                    ButtonType duplicateButton = new ButtonType("Duplicate");
+                    ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                    confirmation.getButtonTypes().setAll(overwriteButton, duplicateButton, cancelButton);
+
+                    Optional<ButtonType> result = confirmation.showAndWait();
+                    if (result.isPresent()) {
+                        if (result.get() == overwriteButton) {
+                            // Overwrite definition hiện tại - sử dụng remove + add
+                            dictionary.removeWord(slangWord);
+                            dictionary.addSlangWord(slangWord, definition);
+                            displayAllSlangWords();
+                            txtResult.setText("✅ Overwritten successfully!\n\n" +
+                                    "Slang: " + slangWord + "\n" +
+                                    "New Definition: " + definition + "\n\n" +
+                                    "Total words: " + dictionary.getSize());
+                        } else if (result.get() == duplicateButton) {
+                            // Thêm slang word mới (giữ nguyên cái cũ)
+                            dictionary.addSlangWord(slangWord, definition);
+                            displayAllSlangWords();
+                            txtResult.setText("✅ Duplicated successfully!\n\n" +
+                                    "Slang: " + slangWord + "\n" +
+                                    "Additional Definition: " + definition + "\n\n" +
+                                    "Total words: " + dictionary.getSize());
+                        }
+                        // Nếu cancel thì không làm gì
+                    }
                 } else {
-                    txtResult.setText("❌ Failed to add slang word!\n\n" +
-                            "Please check that both word and definition are not empty.");
+                    // Thêm slang word mới (không trùng)
+                    boolean success = dictionary.addSlangWord(slangWord, definition);
+                    if (success) {
+                        displayAllSlangWords();
+                        txtResult.setText("✅ Added successfully!\n\n" +
+                                "Slang: " + slangWord + "\n" +
+                                "Definition: " + definition + "\n\n" +
+                                "Total words: " + dictionary.getSize());
+                    }
                 }
             }
         }
     }
-
     @FXML
     private void onDelete() {
         String selected = listViewSlang.getSelectionModel().getSelectedItem();
