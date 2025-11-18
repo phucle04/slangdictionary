@@ -18,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import java.util.Random;
+import java.util.Collections;
 
 public class DictionaryController {
 
@@ -217,14 +218,150 @@ public class DictionaryController {
         txtResult.setText(historyText.toString());
     }
 
+    private void showQuiz1() {
+        List<SlangWord> allWords = dictionary.getAllSlangWords();
+        if (allWords.size() < 4) {
+            txtResult.setText("❌ Not enough words for quiz (need at least 4)");
+            return;
+        }
+
+        Random random = new Random();
+        SlangWord questionWord = allWords.get(random.nextInt(allWords.size()));
+
+        // Chọn 3 đáp án sai
+        List<SlangWord> wrongAnswers = new ArrayList<>();
+        while (wrongAnswers.size() < 3) {
+            SlangWord randomWord = allWords.get(random.nextInt(allWords.size()));
+            if (!randomWord.getWord().equals(questionWord.getWord()) &&
+                    !wrongAnswers.contains(randomWord)) {
+                wrongAnswers.add(randomWord);
+            }
+        }
+
+        // Tạo danh sách đáp án
+        List<SlangWord> allAnswers = new ArrayList<>(wrongAnswers);
+        allAnswers.add(questionWord);
+        Collections.shuffle(allAnswers);
+
+        int correctIndex = allAnswers.indexOf(questionWord);
+
+        // Tạo dialog quiz
+        Alert quizDialog = new Alert(Alert.AlertType.NONE);
+        quizDialog.setTitle("Quiz 1: Guess the Definition");
+        quizDialog.setHeaderText("Slang Word: " + questionWord.getWord() + "\n\nWhat does this mean?");
+
+        // Tạo 4 nút đáp án
+        ButtonType[] answerButtons = new ButtonType[4];
+        for (int i = 0; i < 4; i++) {
+            answerButtons[i] = new ButtonType((char)('A' + i) + ") " + allAnswers.get(i).getDefinition());
+        }
+
+        quizDialog.getButtonTypes().setAll(answerButtons);
+        quizDialog.getButtonTypes().add(ButtonType.CLOSE);
+
+        Optional<ButtonType> result = quizDialog.showAndWait();
+        if (result.isPresent()) {
+            int selectedIndex = -1;
+            for (int i = 0; i < 4; i++) {
+                if (result.get() == answerButtons[i]) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (selectedIndex != -1) {
+                if (selectedIndex == correctIndex) {
+                    txtResult.setText("🎉 Correct! 🎉\n\n" +
+                            "Slang: " + questionWord.getWord() + "\n" +
+                            "Definition: " + questionWord.getDefinition() + "\n\n" +
+                            "Well done! 👍");
+                } else {
+                    txtResult.setText("❌ Wrong Answer!\n\n" +
+                            "Slang: " + questionWord.getWord() + "\n" +
+                            "Correct Definition: " + questionWord.getDefinition() + "\n" +
+                            "Your Choice: " + allAnswers.get(selectedIndex).getDefinition() + "\n\n" +
+                            "Better luck next time! 💪");
+                }
+            }
+        }
+    }
+
+    private void showQuiz2() {
+        List<SlangWord> allWords = dictionary.getAllSlangWords();
+        if (allWords.size() < 4) {
+            txtResult.setText("❌ Not enough words for quiz (need at least 4)");
+            return;
+        }
+
+        Random random = new Random();
+        SlangWord questionWord = allWords.get(random.nextInt(allWords.size()));
+
+        // Chọn 3 đáp án sai
+        List<SlangWord> wrongAnswers = new ArrayList<>();
+        while (wrongAnswers.size() < 3) {
+            SlangWord randomWord = allWords.get(random.nextInt(allWords.size()));
+            if (!randomWord.getWord().equals(questionWord.getWord()) &&
+                    !wrongAnswers.contains(randomWord)) {
+                wrongAnswers.add(randomWord);
+            }
+        }
+
+        // Tạo danh sách đáp án
+        List<SlangWord> allAnswers = new ArrayList<>(wrongAnswers);
+        allAnswers.add(questionWord);
+        Collections.shuffle(allAnswers);
+
+        int correctIndex = allAnswers.indexOf(questionWord);
+
+        // Tạo dialog quiz
+        Alert quizDialog = new Alert(Alert.AlertType.NONE);
+        quizDialog.setTitle("Quiz 2: Guess the Slang Word");
+        quizDialog.setHeaderText("Definition: " + questionWord.getDefinition() + "\n\nWhich slang word matches this definition?");
+
+        // Tạo 4 nút đáp án
+        ButtonType[] answerButtons = new ButtonType[4];
+        for (int i = 0; i < 4; i++) {
+            answerButtons[i] = new ButtonType((char)('A' + i) + ") " + allAnswers.get(i).getWord());
+        }
+
+        quizDialog.getButtonTypes().setAll(answerButtons);
+        quizDialog.getButtonTypes().add(ButtonType.CLOSE);
+
+        Optional<ButtonType> result = quizDialog.showAndWait();
+        if (result.isPresent()) {
+            int selectedIndex = -1;
+            for (int i = 0; i < 4; i++) {
+                if (result.get() == answerButtons[i]) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (selectedIndex != -1) {
+                if (selectedIndex == correctIndex) {
+                    txtResult.setText("🎉 Correct! 🎉\n\n" +
+                            "Definition: " + questionWord.getDefinition() + "\n" +
+                            "Slang Word: " + questionWord.getWord() + "\n\n" +
+                            "Well done! 👍");
+                } else {
+                    txtResult.setText("❌ Wrong Answer!\n\n" +
+                            "Definition: " + questionWord.getDefinition() + "\n" +
+                            "Correct Slang: " + questionWord.getWord() + "\n" +
+                            "Your Choice: " + allAnswers.get(selectedIndex).getWord() + "\n\n" +
+                            "Better luck next time! 💪");
+                }
+            }
+        }
+    }
+
     @FXML
     private void onQuiz1() {
-        txtResult.setText("Quiz 1 clicked!\n\nFeature coming soon...");
+        showQuiz1();
     }
 
     @FXML
     private void onQuiz2() {
-        txtResult.setText("Quiz 2 clicked!\n\nFeature coming soon...");
+        showQuiz2();
     }
 
     @FXML
