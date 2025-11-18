@@ -5,8 +5,8 @@
 ## 📋 Yêu cầu môn học
 - **Môn học**: CSC13002 - Lập trình ứng dụng Java
 - **Đồ án**: #1 - Slang Word
-- **Sinh viên**: [Your Name]
-- **MSSV**: [Your Student ID]
+- **Sinh viên**: Lê Quang Phúc
+- **MSSV**: 23127102
 
 ## 🚀 Tính năng
 - Tìm kiếm theo slang word
