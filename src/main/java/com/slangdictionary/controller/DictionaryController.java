@@ -17,6 +17,7 @@ import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
+import java.util.Random;
 
 public class DictionaryController {
 
@@ -257,6 +258,7 @@ public class DictionaryController {
 
             // Kiểm tra slang word đã tồn tại chưa
             boolean wordExists = dictionary.containsWord(slangWord);
+            String currentDefinition = wordExists ? dictionary.exactSearch(slangWord) : "";
 
             // Hiển thị dialog nhập definition
             TextInputDialog definitionDialog = new TextInputDialog();
@@ -273,7 +275,8 @@ public class DictionaryController {
                     Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
                     confirmation.setTitle("Slang Word Exists");
                     confirmation.setHeaderText("Slang word \"" + slangWord + "\" already exists!");
-                    confirmation.setContentText("Current definition: " + dictionary.exactSearch(slangWord) +
+                    confirmation.setContentText("Current definition: " + currentDefinition +
+                            "\nNew definition: " + definition +
                             "\n\nWhat do you want to do?");
 
                     ButtonType overwriteButton = new ButtonType("Overwrite");
@@ -285,7 +288,7 @@ public class DictionaryController {
                     Optional<ButtonType> result = confirmation.showAndWait();
                     if (result.isPresent()) {
                         if (result.get() == overwriteButton) {
-                            // Overwrite definition hiện tại - sử dụng remove + add
+                            // Overwrite definition hiện tại
                             dictionary.removeWord(slangWord);
                             dictionary.addSlangWord(slangWord, definition);
                             displayAllSlangWords();
@@ -294,12 +297,14 @@ public class DictionaryController {
                                     "New Definition: " + definition + "\n\n" +
                                     "Total words: " + dictionary.getSize());
                         } else if (result.get() == duplicateButton) {
-                            // Thêm slang word mới (giữ nguyên cái cũ)
-                            dictionary.addSlangWord(slangWord, definition);
+                            // DUPLICATE: Kết hợp definition cũ và mới
+                            String combinedDefinition = currentDefinition + " | " + definition;
+                            dictionary.removeWord(slangWord);
+                            dictionary.addSlangWord(slangWord, combinedDefinition);
                             displayAllSlangWords();
                             txtResult.setText("✅ Duplicated successfully!\n\n" +
                                     "Slang: " + slangWord + "\n" +
-                                    "Additional Definition: " + definition + "\n\n" +
+                                    "Combined Definition: " + combinedDefinition + "\n\n" +
                                     "Total words: " + dictionary.getSize());
                         }
                         // Nếu cancel thì không làm gì
@@ -318,6 +323,7 @@ public class DictionaryController {
             }
         }
     }
+
     @FXML
     private void onDelete() {
         String selected = listViewSlang.getSelectionModel().getSelectedItem();
@@ -397,7 +403,24 @@ public class DictionaryController {
 
     @FXML
     private void onRandom() {
-        txtResult.setText("RANDOM clicked!\n\nFeature coming soon...");
+        List<SlangWord> allWords = dictionary.getAllSlangWords();
+        if (allWords.isEmpty()) {
+            txtResult.setText("❌ No slang words available!");
+            return;
+        }
+
+        // Chọn random 1 slang word
+        Random random = new Random();
+        SlangWord randomWord = allWords.get(random.nextInt(allWords.size()));
+
+        // Hiển thị kết quả
+        txtResult.setText("🎲 Random Slang Word\n\n" +
+                "Word: " + randomWord.getWord() + "\n" +
+                "Definition: " + randomWord.getDefinition() + "\n\n" +
+                "✨ Discover something new!");
+
+        // Highlight trong list view
+        highlightInListView(randomWord.getWord());
     }
 
     @FXML

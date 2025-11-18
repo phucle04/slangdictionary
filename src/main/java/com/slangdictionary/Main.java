@@ -22,7 +22,7 @@ public class Main extends Application {
             primaryStage.setTitle("Slang Dictionary");
             primaryStage.setScene(scene);
             primaryStage.setMinWidth(650);
-            primaryStage.setMinHeight(350);
+            primaryStage.setMinHeight(350);t
 
             // Show window
             primaryStage.show();
